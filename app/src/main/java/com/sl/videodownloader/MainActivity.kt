@@ -7,9 +7,16 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import org.json.JSONObject
+import android.webkit.JavascriptInterface
+import android.webkit.WebChromeClient
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.compose.setContent
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Arrangement
@@ -101,17 +108,84 @@ class MainActivity : ComponentActivity() {
         setContent {
             val factory = remember { HomeViewModelFactory(repository) }
             val homeViewModel: HomeViewModel = viewModel(factory = factory)
-            var themeName by rememberSaveable { mutableStateOf(ThemeMode.SYSTEM.name) }
-            SLVideoDownloaderTheme(ThemeMode.valueOf(themeName)) {
-                SLVideoDownloaderApp(homeViewModel, sharedText, ThemeMode.valueOf(themeName)) { themeName = it.name }
-            }
+            AndroidView(
+                modifier = Modifier.fillMaxSize(),
+                factory = { context ->
+                    WebView(context).apply {
+                        settings.javaScriptEnabled = true
+                        settings.domStorageEnabled = true
+                        settings.cacheMode = WebSettings.LOAD_NO_CACHE
+                        settings.allowFileAccess = false
+                        settings.allowContentAccess = false
+                        webViewClient = WebViewClient()
+                        webChromeClient = WebChromeClient()
+                        addJavascriptInterface(DownloadBridge(homeViewModel, context), "SLAndroid")
+                        loadUrl("file:///android_asset/index.html")
+                    }
+                },
+                update = { webView ->
+                    if (!sharedText.isNullOrBlank()) {
+                        val safeText = JSONObject.quote(sharedText)
+                        webView.evaluateJavascript("window.setSharedUrl($safeText)", null)
+                    }
+                }
+            )
         }
+    }
+
+    override fun onBackPressed() {
+        val webView = findViewById<WebView>(android.R.id.content)
+        if (webView?.canGoBack() == true) webView.goBack() else super.onBackPressed()
     }
 
     companion object {
         private const val STORAGE_PERMISSION_REQUEST = 7001
     }
 }
+
+private class DownloadBridge(
+    private val viewModel: HomeViewModel,
+    private val context: android.content.Context
+) {
+    @JavascriptInterface
+    fun paste(): String = context.getSystemService(android.content.ClipboardManager::class.java)
+        ?.primaryClip?.getItemAt(0)?.coerceToText(context)?.toString().orEmpty()
+
+    @JavascriptInterface
+    fun copy(value: String) {
+        val clipboard = context.getSystemService(android.content.ClipboardManager::class.java)
+        clipboard?.setPrimaryClip(ClipData.newPlainText("Video URL", value))
+    }
+
+    @JavascriptInterface
+    fun share(value: String) {
+        context.startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, value)
+        }, "Share video URL"))
+    }
+
+    @JavascriptInterface
+    fun download(url: String) {
+        viewModel.setUrl(url)
+        viewModel.addDownload()
+    }
+
+    @JavascriptInterface
+    fun openGithub() {
+        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/surjolive")))
+    }
+
+    @JavascriptInterface
+    fun openRepositories() {
+        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/surjolive?tab=repositories")))
+    }
+}
+
+/*
+ * The Compose implementation remains below as a migration fallback while the
+ * bundled WebView surface is used by the main activity.
+ */
 
 private class HomeViewModelFactory(private val repository: DownloadRepository) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")

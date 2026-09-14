@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#081311">
+  <title>SL Downloader</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="grain"></div>
+  <div class="watermark" aria-hidden="true">SURJO LIVE</div>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand"><div class="brand-mark"><img src="github-avatar.png" alt="GitHub profile logo"></div><div><strong>SL Downloader</strong><span>AUTHORIZED MEDIA VAULT</span></div></div>
+      <div class="top-actions"><button class="icon-button" id="themeButton" aria-label="Toggle theme">◐</button><button class="icon-button menu-button" id="menuButton" aria-label="Open menu">⋮</button><div id="quickMenu" class="quick-menu hidden" role="menu"><button data-menu="paste">Paste URL</button><button data-menu="copy">Copy URL</button><button data-menu="share">Share URL</button><button data-menu="theme">Toggle theme</button><button data-menu="clear">Clear queue</button><hr><button data-menu="github">GitHub support</button><button data-menu="privacy">Privacy policy</button></div></div>
+    </header>
+
+    <section class="hero panel reveal">
+      <div class="eyebrow"><span class="pulse"></span> READY TO DOWNLOAD</div>
+      <h1 class="animated-title">Bring your videos<br><em>home.</em></h1>
+      <p>Save direct video files you own or have permission to download. Fast, private, and stored on your device.</p>
+      <div class="url-box">
+        <div class="url-icon">↗</div>
+        <input id="urlInput" type="url" placeholder="Paste a direct MP4 or WebM URL" autocomplete="off">
+        <button class="mini-button" id="pasteButton">Paste</button>
+        <button class="mini-button" id="copyButton">Copy</button>
+        <button class="mini-button" id="shareButton">Share</button>
+        <button class="clear-button" id="clearButton" aria-label="Clear URL">×</button>
+      </div>
+      <div id="message" class="message" role="status"></div>
+      <button id="downloadButton" class="primary-button"><span>Analyze and download</span><b>→</b></button>
+      <div class="policy"><span>●</span> Direct MP4, WebM, MOV and M4V files only</div>
+    </section>
+
+    <section class="stats reveal delay-1">
+      <article class="stat-card"><span>ACTIVE NOW</span><strong id="activeCount">0</strong><small>downloads</small></article>
+      <article class="stat-card accent"><span>COMPLETED</span><strong id="completedCount">0</strong><small>on this device</small></article>
+      <article class="stat-card"><span>STORAGE</span><strong>LOCAL</strong><small>private by design</small></article>
+    </section>
+
+    <nav class="tabs reveal delay-1" aria-label="App sections">
+      <button class="tab active" data-view="home">Overview</button>
+      <button class="tab" data-view="queue">Queue <b id="queueBadge">0</b></button>
+      <button class="tab" data-view="history">History</button>
+      <button class="tab" data-view="settings">Settings</button>
+    </nav>
+
+    <div id="homeView" class="view">
+      <section class="section-head reveal delay-2"><div><span class="eyebrow">YOUR LIBRARY</span><h2>Recent downloads</h2></div><button class="text-button" id="githubButton">GitHub ↗</button></section>
+      <section id="downloads" class="downloads reveal delay-3"><div class="empty-state"><div class="empty-icon">↓</div><strong>Your library is quiet</strong><span>Downloaded files will appear here.</span></div></section>
+    </div>
+    <div id="queueView" class="view hidden"><div class="section-head"><div><span class="eyebrow">DOWNLOAD FLOW</span><h2>Queue</h2></div><button class="text-button" id="clearQueueButton">Clear queue</button></div><div class="toolbar"><input id="queueSearch" placeholder="Search queued files"><select id="queueFilter"><option value="all">All statuses</option><option value="queued">Queued</option><option value="done">Completed</option></select></div><section id="queueList" class="downloads"></section></div>
+    <div id="historyView" class="view hidden"><div class="section-head"><div><span class="eyebrow">LOCAL ARCHIVE</span><h2>History</h2></div><button class="text-button" id="clearHistoryButton">Clear history</button></div><section id="historyList" class="downloads"></section></div>
+    <div id="settingsView" class="view hidden"><div class="section-head"><div><span class="eyebrow">PREFERENCES</span><h2>Settings</h2></div></div><div class="settings-list"><label class="setting"><span><strong>Remember queue</strong><small>Keep queued URLs on this device</small></span><input id="rememberToggle" type="checkbox" checked><i></i></label><label class="setting"><span><strong>Reduced motion</strong><small>Use gentler transitions</small></span><input id="motionToggle" type="checkbox"><i></i></label><button class="setting-link" id="githubSettings">Open GitHub support <b>↗</b></button><button class="setting-link" id="privacyButton">Privacy and authorized-use policy <b>↗</b></button></div></div>
+
+    <footer><span>SL DOWNLOADER <i>•</i> LOCAL FIRST</span><button id="reposButton">Support & source ↗</button></footer>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
