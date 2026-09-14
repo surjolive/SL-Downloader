@@ -60,6 +60,14 @@ The app does **not** extract videos from platform pages. A YouTube, Vimeo, socia
 
 ## Screens and workflows
 
+### Screenshots
+
+The screenshots below show the bundled SL Downloader interface at desktop and mobile viewport sizes. The Android app loads this same local HTML/CSS/JavaScript surface inside its WebView.
+
+| Desktop | Mobile |
+| --- | --- |
+| ![SL Downloader desktop home](docs/screenshots/home-desktop.png) | ![SL Downloader mobile home](docs/screenshots/home-mobile.png) |
+
 ### Home
 
 Paste or type an authorized direct media URL, copy it, share it, or start a download. The home screen shows active and completed counts, animated status feedback, and recent queue items.
