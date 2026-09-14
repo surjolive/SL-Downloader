@@ -1,0 +1,13 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.SLVideoDownloader" parent="android:style/Theme.Material.Light.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="android:colorAccent">#0B6E69</item>
+        <!-- Secondary brand color. -->
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">#F7FAF8</item>
+        <item name="android:navigationBarColor">#F7FAF8</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <!-- Customize your theme here. -->
+    </style>
+</resources>
