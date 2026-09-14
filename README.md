@@ -251,6 +251,11 @@ Refer to each dependency's distributed metadata and source repository for comple
 
 Issues and pull requests are welcome through [GitHub](https://github.com/surjolive/SL-Downloader). Contributions must preserve the authorized-download policy, local-first privacy model, and Android security restrictions.
 
+- Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+- Follow the [Code of Conduct](CODE_OF_CONDUCT.md) in project discussions.
+- Use [SECURITY.md](SECURITY.md) for private vulnerability reports.
+- Use the issue templates for reproducible bugs and feature proposals.
+
 ## Maintainer
 
 **Surjo Live**
