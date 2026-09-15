@@ -31,8 +31,10 @@
 ## What it does
 
 SL Downloader is a local-first Android application for downloading direct video files that the user owns or is explicitly authorized to save. It validates URLs before network access, streams files without loading them into memory, and writes them to the device's Movies library.
+It recognizes common YouTube and social-media page URLs so the app can explain why a page URL is not a downloadable file.
 
 The app does **not** extract videos from platform pages. A YouTube, Vimeo, social-media, private, DRM-protected, paywalled, or login-only page is not a direct media URL and is intentionally rejected.
+Use an official download/export link supplied by the platform or a direct media URL for content you are authorized to save.
 
 ## Features
 

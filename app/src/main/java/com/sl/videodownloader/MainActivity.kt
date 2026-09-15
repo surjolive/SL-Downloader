@@ -44,6 +44,7 @@ import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.VideoLibrary
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -232,8 +233,8 @@ private fun HomeScreen(modifier: Modifier, url: String, message: String?, downlo
         AnimatedVisibility(visible = true, enter = fadeIn() + scaleIn()) {
             Text("SL DOWNLOADER", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
         }
-        Text("Download your authorized videos", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-        Text("Direct MP4 and WebM files only. Use downloads you own or have permission to save.", color = MaterialTheme.colorScheme.secondary)
+        Text("Download authorized videos", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+        Text("Use direct media URLs or supported public platform links that you own or have permission to save.", color = MaterialTheme.colorScheme.secondary)
         OutlinedTextField(value = url, onValueChange = viewModel::setUrl, modifier = Modifier.fillMaxWidth(), label = { Text("Video URL") }, singleLine = true, trailingIcon = {
             Row {
                 IconButton(onClick = { clipboard.getText()?.text?.let(viewModel::setUrl) }) { Icon(Icons.Default.ContentPaste, "Paste URL") }
@@ -247,6 +248,13 @@ private fun HomeScreen(modifier: Modifier, url: String, message: String?, downlo
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
             StatCard("Active", downloads.count { it.status == DownloadStatus.DOWNLOADING }.toString(), Modifier.weight(1f))
             StatCard("Completed", downloads.count { it.status == DownloadStatus.COMPLETED }.toString(), Modifier.weight(1f))
+        }
+        Text("Supported sources", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            AssistChip(onClick = {}, label = { Text("Direct media") })
+            AssistChip(onClick = {}, label = { Text("YouTube") })
+            AssistChip(onClick = {}, label = { Text("Instagram") })
+            AssistChip(onClick = {}, label = { Text("TikTok") })
         }
         Text("Recent downloads", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         downloads.take(3).forEach { DownloadRow(it) }
@@ -328,10 +336,10 @@ private fun SettingsScreen(modifier: Modifier, themeMode: ThemeMode, onThemeChan
             ThemeButton("Dark", Icons.Default.DarkMode, ThemeMode.DARK, themeMode, onThemeChange, Modifier.weight(1f))
         }
         Text("Download", style = MaterialTheme.typography.titleLarge)
-        Text("Files are saved to Movies / SL Downloader")
-        Text("Only authorized direct media URLs are supported.")
+        Text("Files are saved to Movies / SL Downloader on this device.")
+        Text("Supported links include direct media and public platform URLs you are allowed to save.")
         Text("About", style = MaterialTheme.typography.titleLarge)
-        Text("SL Downloader 1.0\nBuilt with Kotlin, Jetpack Compose, Material 3 and Media3.")
+        Text("SL Downloader 1.0\nBuilt with Kotlin, Jetpack Compose, Material 3, Room, and Android platform tools.")
         Text("Support", style = MaterialTheme.typography.titleLarge)
         SupportLink("GitHub profile", "https://github.com/surjolive", Icons.Default.Code) {
             context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/surjolive")))

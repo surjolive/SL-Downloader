@@ -22,6 +22,24 @@ function validDirectUrl(value) {
     return (url.protocol === 'http:' || url.protocol === 'https:') && direct && !blocked;
   } catch (_) { return false; }
 }
+function validPlatformUrl(value) {
+  try {
+    const host = new URL(value.trim()).hostname.toLowerCase().replace(/^www\./, '');
+    return ['youtube.com', 'youtu.be', 'facebook.com', 'instagram.com', 'tiktok.com', 'vimeo.com']
+      .some(platform => host === platform || host.endsWith(`.${platform}`));
+  } catch (_) { return false; }
+}
+function platformName(value) {
+  try {
+    const host = new URL(value.trim()).hostname.toLowerCase().replace(/^www\./, '');
+    if (host === 'youtube.com' || host === 'youtu.be' || host.endsWith('.youtube.com')) return 'YouTube';
+    if (host === 'facebook.com' || host.endsWith('.facebook.com')) return 'Facebook';
+    if (host === 'instagram.com' || host.endsWith('.instagram.com')) return 'Instagram';
+    if (host === 'tiktok.com' || host.endsWith('.tiktok.com')) return 'TikTok';
+    if (host === 'vimeo.com' || host.endsWith('.vimeo.com')) return 'Vimeo';
+    return 'this platform';
+  } catch (_) { return 'this platform'; }
+}
 function showMessage(text, error = true) {
   message.textContent = text;
   message.style.color = error ? 'var(--danger)' : 'var(--brand)';
@@ -43,8 +61,8 @@ function removeItem(index) { items.splice(index, 1); persist(); render(); showMe
 function escapeHtml(value) { return value.replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char])); }
 function submit() {
   const value = input.value.trim();
-  if (!validDirectUrl(value)) {
-    showMessage('Use an authorized direct MP4, WebM, MOV or M4V URL.');
+  if (!validDirectUrl(value) && !validPlatformUrl(value)) {
+    showMessage(`This looks like a ${platformName(value)} page URL. Paste an authorized direct media file or supported public platform link.`);
     input.focus();
     return;
   }

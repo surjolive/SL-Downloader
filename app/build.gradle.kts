@@ -22,6 +22,9 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
+        ndk {
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -36,6 +39,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+    packaging {
+        jniLibs.useLegacyPackaging = true
     }
     buildFeatures { compose = true }
 }
@@ -62,6 +68,9 @@ dependencies {
     implementation(libs.androidx.datastore)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.material)
+    implementation(libs.youtubedl.android.library)
+    implementation(libs.youtubedl.android.ffmpeg)
+    implementation(libs.youtubedl.android.aria2c)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)

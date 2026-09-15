@@ -19,10 +19,10 @@
     <section class="hero panel reveal">
       <div class="eyebrow"><span class="pulse"></span> READY TO DOWNLOAD</div>
       <h1 class="animated-title">Bring your videos<br><em>home.</em></h1>
-      <p>Save direct video files you own or have permission to download. Fast, private, and stored on your device.</p>
+      <p>Download authorized media you own or have permission to save. Use direct file URLs or supported public platform links.</p>
       <div class="url-box">
         <div class="url-icon">↗</div>
-        <input id="urlInput" type="url" placeholder="Paste a direct MP4 or WebM URL" autocomplete="off">
+        <input id="urlInput" type="url" placeholder="Paste a direct or supported video URL" autocomplete="off">
         <button class="mini-button" id="pasteButton">Paste</button>
         <button class="mini-button" id="copyButton">Copy</button>
         <button class="mini-button" id="shareButton">Share</button>
@@ -30,13 +30,23 @@
       </div>
       <div id="message" class="message" role="status"></div>
       <button id="downloadButton" class="primary-button"><span>Analyze and download</span><b>→</b></button>
-      <div class="policy"><span>●</span> Direct MP4, WebM, MOV and M4V files only</div>
+      <div class="policy"><span>●</span> Supported sources: direct media, YouTube, Facebook, Instagram, TikTok, Vimeo and more public links</div>
+      <div class="policy"><span>●</span> Automatic video + audio merge and title metadata support for compatible downloads</div>
     </section>
 
     <section class="stats reveal delay-1">
-      <article class="stat-card"><span>ACTIVE NOW</span><strong id="activeCount">0</strong><small>downloads</small></article>
-      <article class="stat-card accent"><span>COMPLETED</span><strong id="completedCount">0</strong><small>on this device</small></article>
-      <article class="stat-card"><span>STORAGE</span><strong>LOCAL</strong><small>private by design</small></article>
+      <article class="stat-card"><span>SUPPORTED</span><strong>PUBLIC</strong><small>platform and direct links</small></article>
+      <article class="stat-card accent"><span>FORMAT</span><strong>MP4</strong><small>video + audio merge</small></article>
+      <article class="stat-card"><span>STORAGE</span><strong>LOCAL</strong><small>private on device</small></article>
+    </section>
+
+    <section class="view reveal delay-2">
+      <div class="section-head"><div><span class="eyebrow">SUPPORTED SOURCES</span><h2>What you can save</h2></div></div>
+      <div class="downloads">
+        <article class="download-item"><div class="file-icon">▾</div><div class="file-info"><strong>Direct media</strong><span>MP4, WebM, MOV, M4V and OGV URLs</span></div><b class="file-status">FAST</b></article>
+        <article class="download-item"><div class="file-icon">▾</div><div class="file-info"><strong>Social platforms</strong><span>YouTube, Facebook, Instagram, TikTok and Vimeo links</span></div><b class="file-status">PUBLIC</b></article>
+        <article class="download-item"><div class="file-icon">▾</div><div class="file-info"><strong>Authorized use</strong><span>Only content you own or have permission to download</span></div><b class="file-status">SAFE</b></article>
+      </div>
     </section>
 
     <nav class="tabs reveal delay-1" aria-label="App sections">
@@ -52,7 +62,7 @@
     </div>
     <div id="queueView" class="view hidden"><div class="section-head"><div><span class="eyebrow">DOWNLOAD FLOW</span><h2>Queue</h2></div><button class="text-button" id="clearQueueButton">Clear queue</button></div><div class="toolbar"><input id="queueSearch" placeholder="Search queued files"><select id="queueFilter"><option value="all">All statuses</option><option value="queued">Queued</option><option value="done">Completed</option></select></div><section id="queueList" class="downloads"></section></div>
     <div id="historyView" class="view hidden"><div class="section-head"><div><span class="eyebrow">LOCAL ARCHIVE</span><h2>History</h2></div><button class="text-button" id="clearHistoryButton">Clear history</button></div><section id="historyList" class="downloads"></section></div>
-    <div id="settingsView" class="view hidden"><div class="section-head"><div><span class="eyebrow">PREFERENCES</span><h2>Settings</h2></div></div><div class="settings-list"><label class="setting"><span><strong>Remember queue</strong><small>Keep queued URLs on this device</small></span><input id="rememberToggle" type="checkbox" checked><i></i></label><label class="setting"><span><strong>Reduced motion</strong><small>Use gentler transitions</small></span><input id="motionToggle" type="checkbox"><i></i></label><button class="setting-link" id="githubSettings">Open GitHub support <b>↗</b></button><button class="setting-link" id="privacyButton">Privacy and authorized-use policy <b>↗</b></button></div></div>
+    <div id="settingsView" class="view hidden"><div class="section-head"><div><span class="eyebrow">PREFERENCES</span><h2>Settings</h2></div></div><div class="settings-list"><label class="setting"><span><strong>Remember queue</strong><small>Keep queued URLs on this device</small></span><input id="rememberToggle" type="checkbox" checked><i></i></label><label class="setting"><span><strong>Reduced motion</strong><small>Use gentler transitions</small></span><input id="motionToggle" type="checkbox"><i></i></label><label class="setting"><span><strong>Supported sources</strong><small>Direct media + public platform URLs you are allowed to save</small></span><input type="checkbox" checked disabled><i></i></label><button class="setting-link" id="githubSettings">Open GitHub support <b>↗</b></button><button class="setting-link" id="privacyButton">Privacy and authorized-use policy <b>↗</b></button></div></div>
 
     <footer><span>SL DOWNLOADER <i>•</i> LOCAL FIRST</span><button id="reposButton">Support & source ↗</button></footer>
   </main>

@@ -2,15 +2,21 @@ package com.sl.videodownloader.data.repository
 
 import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
 import android.os.Environment
 import android.os.Build
 import android.provider.MediaStore
+import android.webkit.MimeTypeMap
 import com.sl.videodownloader.data.database.DownloadDao
 import com.sl.videodownloader.data.database.DownloadEntity
 import com.sl.videodownloader.data.database.DownloadStatus
 import com.sl.videodownloader.util.safeFileName
+import com.sl.videodownloader.util.UrlValidator
+import com.yausername.youtubedl_android.YoutubeDL
+import com.yausername.youtubedl_android.YoutubeDLException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
 import java.net.ConnectException
@@ -55,6 +61,10 @@ class DownloadRepository(private val context: Context, private val dao: Download
     }
 
     private suspend fun downloadOnce(item: DownloadEntity, onProgress: suspend (Long, Long) -> Unit) {
+        if (!UrlValidator.isAuthorizedMediaUrl(item.url)) {
+            downloadPlatformOnce(item, onProgress)
+            return
+        }
         val connection = (URL(item.url).openConnection() as HttpURLConnection).apply {
             connectTimeout = 15_000
             readTimeout = 30_000
@@ -127,6 +137,77 @@ class DownloadRepository(private val context: Context, private val dao: Download
             connection.disconnect()
         }
     }
+
+    private suspend fun downloadPlatformOnce(item: DownloadEntity, onProgress: suspend (Long, Long) -> Unit) {
+        val workingDirectory = File(context.cacheDir, "platform-downloads/${item.id}").apply { mkdirs() }
+        val outputTemplate = File(workingDirectory, "%(title).200B.%(ext)s").absolutePath
+        val request = com.yausername.youtubedl_android.YoutubeDLRequest(item.url).apply {
+            addOption("--no-playlist")
+            addOption("--newline")
+                addOption("-f", "bestvideo*+bestaudio/best")
+            addOption("--merge-output-format", "mp4")
+                addOption("--add-metadata")
+            addOption("-o", outputTemplate)
+        }
+        try {
+            YoutubeDL.getInstance().execute(request, item.id.toString()) { progress, _, _ ->
+                runBlocking { onProgress(progress.toLong(), 100L) }
+            }
+            val output = workingDirectory.listFiles()
+                ?.filter { it.isFile && !it.name.endsWith(".part") && !it.name.endsWith(".ytdl") }
+                ?.maxByOrNull { it.lastModified() }
+                ?: throw DownloadException("The platform did not provide a downloadable video.")
+            val importedUri = importVideo(output, item)
+            dao.update(
+                item.copy(
+                    fileName = output.name.safeFileName(),
+                    fileUri = importedUri.toString(),
+                    mimeType = mimeTypeFor(output),
+                    downloadedBytes = output.length(),
+                    totalBytes = output.length(),
+                    status = DownloadStatus.COMPLETED,
+                    completedAt = System.currentTimeMillis()
+                )
+            )
+        } catch (error: YoutubeDLException) {
+            dao.update(item.copy(status = DownloadStatus.FAILED, errorMessage = error.message ?: "Platform download failed."))
+            throw DownloadException(error.message ?: "Platform download failed.", error)
+        } catch (error: DownloadException) {
+            dao.update(item.copy(status = DownloadStatus.FAILED, errorMessage = error.message))
+            throw error
+        } finally {
+            workingDirectory.deleteRecursively()
+        }
+    }
+
+    private fun importVideo(source: File, item: DownloadEntity): Uri {
+        val name = source.name.safeFileName("video.mp4")
+        val values = ContentValues().apply {
+            put(MediaStore.Video.Media.DISPLAY_NAME, name)
+            put(MediaStore.Video.Media.MIME_TYPE, mimeTypeFor(source))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + "/SL Downloader")
+                put(MediaStore.Video.Media.IS_PENDING, 1)
+            }
+        }
+        val uri = context.contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values)
+            ?: throw DownloadException("Unable to create destination file")
+        try {
+            context.contentResolver.openOutputStream(uri)?.use { output ->
+                source.inputStream().use { input -> input.copyTo(output) }
+            } ?: throw DownloadException("Unable to open destination file")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                context.contentResolver.update(uri, ContentValues().apply { put(MediaStore.Video.Media.IS_PENDING, 0) }, null, null)
+            }
+            return uri
+        } catch (error: Throwable) {
+            context.contentResolver.delete(uri, null, null)
+            throw error
+        }
+    }
+
+    private fun mimeTypeFor(file: File): String =
+        MimeTypeMap.getSingleton().getMimeTypeFromExtension(file.extension.lowercase()) ?: "video/mp4"
 
     companion object {
         private const val MAX_ATTEMPTS = 3

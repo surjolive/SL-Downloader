@@ -6,6 +6,7 @@ import com.sl.videodownloader.data.database.DownloadEntity
 import com.sl.videodownloader.data.database.DownloadStatus
 import com.sl.videodownloader.data.repository.DownloadRepository
 import com.sl.videodownloader.data.repository.DownloadException
+import com.sl.videodownloader.domain.resolver.PlatformDetector
 import com.sl.videodownloader.util.UrlValidator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,8 +33,15 @@ class HomeViewModel(private val repository: DownloadRepository) : ViewModel() {
     fun setUrl(value: String) { _url.value = value; _message.value = null }
     fun clearUrl() { setUrl("") }
     fun validate(): Boolean {
-        val valid = UrlValidator.isAuthorizedMediaUrl(_url.value)
-        if (!valid) _message.value = "Enter a valid HTTP or HTTPS direct video URL."
+        val valid = UrlValidator.isSupportedDownloadUrl(_url.value)
+        if (!valid) {
+            val platform = PlatformDetector.detect(_url.value)?.platform
+            _message.value = if (platform != null && platform != "Direct Media" && platform != "Unknown source") {
+                "$platform page URLs are not downloadable here. Paste an authorized direct video file URL."
+            } else {
+                "Enter a valid HTTP or HTTPS direct video URL."
+            }
+        }
         return valid
     }
     fun addDownload() {

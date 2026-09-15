@@ -11,6 +11,7 @@ class UrlValidatorTest {
     @Test fun acceptsHttpAndHttpsUrls() {
         assertTrue(UrlValidator.isAuthorizedMediaUrl("https://example.com/video.mp4"))
         assertTrue(UrlValidator.isAuthorizedMediaUrl("http://example.com/video.webm"))
+        assertTrue(UrlValidator.isSupportedDownloadUrl("https://youtu.be/video"))
     }
 
     @Test fun rejectsNonHttpUrls() {
